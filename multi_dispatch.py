@@ -43,7 +43,6 @@ def resolve(p, q, m_edge, n_tasks, max_q, show=False):
     model.Params.MIPGap=0.0001 # 百分比界差
     model.Params.TimeLimit=100 # 限制求解时间为 100s
     model.optimize()
-
     result = [[] for i in range(m_edge)]
     regex = re.compile(r"\[.*\]")
     for v in model.getVars():
@@ -53,7 +52,11 @@ def resolve(p, q, m_edge, n_tasks, max_q, show=False):
             arr = regex.search(arr).group()
             i, k, j = arr[1:-1].split(',')
             result[int(i)].append(int(j))
-    return result
+    best = 0
+    for (i,r) in enumerate(result):
+        for j in r:
+            best = best + p[i][j] * q[i]
+    return result, best
 
 
 # 3 edge server (include MEC)
@@ -89,12 +92,16 @@ max_q = 10
 
 # MEC价格从1.0到12.0递增，查看MEC得到的任务数量和利润
 price_mec = 1.0
+# 各个价格下，整数规划的结果，{[xikj]}
 rets = {}
+# 各价格下，整数规划的最优解
+bests = {}
 for i in range(1, 12):
     q[0] = price_mec
     price_mec = price_mec + 1.0
-    result = resolve(p, q, m_edge, n_tasks, max_q)
+    result, best = resolve(p, q, m_edge, n_tasks, max_q)
     rets[q[0]] = result
+    bests[q[0]] = best
 
 for price in rets.keys():
     for i in range(len(rets[price])):
@@ -103,5 +110,7 @@ for price in rets.keys():
     size = 0
     for i in rets[price][0]:
         size = size + p[0][i]
+
+    print("best: ", bests[price])
     print("tasks size: ", size, end="\n")
     print("profit: ", size * price, end="\n\n")
