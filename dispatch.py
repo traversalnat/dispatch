@@ -1,5 +1,6 @@
 import gurobipy as grb
 from gurobipy import *
+import re
 
 __author__ = "Zhihui Zhang"
 __version__ = "1.0"
@@ -67,5 +68,15 @@ model.Params.MIPGap=0.0001 # 百分比界差
 model.Params.TimeLimit=100 # 限制求解时间为 100s
 model.optimize()
 
+result = [[] for i in range(m_edge)]
+regex = re.compile(r"\[.*\]")
 for v in model.getVars():
-	print(f"{v.varName}：{round(v.x,3)}")
+    line = f"{v.varName}：{round(v.x,3)}" 
+    if "0.0" not in line:
+        arr = v.varName
+        arr = regex.search(arr).group()
+        i, k, j = arr[1:-1].split(',')
+        result[int(i)].append(int(j))
+
+for i in range(len(result)):
+    print(i, ":", result[i])
