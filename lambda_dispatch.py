@@ -61,7 +61,7 @@ def resolve(p, q, m_edge, n_tasks, max_q, show=False):
 # 3 edge server (include MEC)
 prices = [3.2, 2.3]
 # frequence，节点速率(Hz)
-freq = [160, 80]
+freq = [60, 20]
 # task size,  任务大小(Hz) lambda 为 10 的指数分布
 task_size = [8.31, 0.33, 14.97, 7.08, 7.69, 1.96, 2.13, 9.77, 18.12, 9.28]
 # p_ij, 任务j在节点i上的运行速度
@@ -86,8 +86,11 @@ q = prices
 # [[pij, ], ] 常数
 p = rates
 
+# 任务到达速率
+reach_rate = 0.3
+
 # 最大可接受价格, 也是循环次数
-max_q = 13 
+max_q = 13
 
 def participant(pos, func, min_price):
     # 价格从min_price到max_q递增
@@ -117,10 +120,10 @@ def participant(pos, func, min_price):
 # MEC 的效益函数
 
 
-def mec_func(r, q) -> (float, bool):
-    #  return r * q, True
-    u = 16  # 每秒16个任务
+def mec_func(J, q) -> (float, bool):
+    u = 6 # 每秒16个任务
     C = 0.3  # 等待成本/s
+    r = J * reach_rate # 实际到达速率
     if r >= u:
         return 0, False
     pp = r/u
@@ -130,14 +133,13 @@ def mec_func(r, q) -> (float, bool):
 # float 表示效益函数值，bool 表示不满足约束
 
 
-def es_func(r, q) -> (float, bool):
-    #  return r * q, True
+def es_func(J, q) -> (float, bool):
     EX2 = 1
     EX = 2
     C = 0.3
-    u = 8
-    r0 = 2
-    r = r + r0
+    u = 2
+    r0 = 0.2
+    r = J * reach_rate + r0
     # C1 约束
     if r * EX >= u:
         return 0, False
