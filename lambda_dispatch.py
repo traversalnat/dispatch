@@ -101,6 +101,24 @@ def es_func(J, q) -> (float, bool):
 
     return r*(R+C)/u - C*((pp+r*EX2/u)/(2*(1-pp)*EX)), True
 
+def es_func_low(J, q) -> (float, bool):
+    EX2 = 1
+    EX = 2
+    u = 2
+    r0 = 0.01
+    r = J * reach_rate + r0
+    # C1 约束
+    if r * EX >= u:
+        return 0, False
+
+    # TODO C2 约束
+
+    # 复合任务到达率 = r + 固定任务复合到达率
+
+    pp = r * EX / u
+
+    return r*(R+C)/u - C*((pp+r*EX2/u)/(2*(1-pp)*EX)), True
+
 
 result = []
 # MEC 首先给出价格

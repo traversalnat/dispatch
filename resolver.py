@@ -56,3 +56,29 @@ def resolve(p, q, m_edge, n_tasks, max_q, show=False):
             i, k, j = arr[1:-1].split(',')
             result[int(i)].append(int(j))
     return result
+
+
+def participant(edge, func, min_price):
+    # 价格从min_price到max_q递增
+    price = min_price
+    # 各个价格下，整数规划的结果，{[xikj]}
+    best_price = min_price
+    max_profit = 0
+    max_rate = 0
+    while True:
+        if price > max_q:
+            break
+        q[pos] = price
+        result = resolve(p, q, m_edge, n_tasks, max_q)
+        profit, valid = func(len(result[pos]), price)
+        print(pos, ":", profit, " with price ",
+              price, " and r ", len(result[pos]))
+        if not valid:
+            price = price + 1.0
+            continue
+        if profit > max_profit:
+            max_profit = profit
+            best_price = price
+            max_rate = len(result[pos])
+        price = price + 1.0
+    return best_price, max_rate
