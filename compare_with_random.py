@@ -1,8 +1,13 @@
-# 模拟到达 N 个任务时的任务调度
+# 与随机算法比较，整数规划算法的优势
+
 from resolver import resolve
 from dataGen import genSample
 import random
 from edge import edge, es_edge, mec, participant
+from sum_Cj import *
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 __author__ = "Zhihui Zhang"
 __version__ = "1.0"
@@ -12,6 +17,10 @@ __email__ = "1726546320 [at] qq [dot] com"
 reach_rate = 0.3
 # 最大可接受价格, 也是循环次数
 max_q = 13
+
+freq = [60, 20]
+
+q = [2.0, 6.0]
 
 # 生成 p
 
@@ -30,20 +39,26 @@ def gen_p(freq, r, num):
         rates.append(price_rate)
     return rates
 
-# frequence，节点速率(Hz)
-freq = [60, 20]
-# r 分别为8, 2
-q = [2.0, 3.0]
+sums_rand = []
+sums_ret = []
 
-ret = [[], []]
 for _ in range(100):
     p = gen_p(freq, 10, 10)
-    result = resolve(p, q, 2, 10, 13)
-    ret[0].append(len(result[0]))
-    ret[1].append(len(result[1]))
+    a = [i for i in range(10)]
+    rand = get_random_split(a)
+    ret = resolve(p, q, 2, 10, 13)
+    sum_ret_Cj = sum_Cj_for(p, q, ret)
+    sum_rand_Cj = sum_Cj_for(p, q, rand)
+    sums_rand.append(sum_rand_Cj)
+    sums_ret.append(sum_ret_Cj)
 
-print(ret[0])
-print(ret[1])
 
+fig, ax = plt.subplots()
+ax.plot(range(100), sums_ret, label='Random')
+ax.plot(range(100), sums_rand, label='RP')
 
+ax.set_xlabel('X Label')
+ax.set_ylabel('Sum of Cj')
+ax.legend()
 
+plt.show()

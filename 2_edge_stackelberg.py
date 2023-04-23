@@ -105,7 +105,7 @@ def es_func_low(J, q) -> (float, bool):
     EX2 = 1
     EX = 2
     u = 2
-    r0 = 0.01
+    r0 = 0.09
     r = J * reach_rate + r0
     # C1 约束
     if r * EX >= u:
@@ -125,7 +125,8 @@ result = []
 q[0] = 2.0
 for i in range(10):
     # ES 根据 MEC 给出的价格计算得到自己的最优解
-    es_best, es_rate = participant(1, es_func, 1.0)
+    #  es_best, es_rate = participant(1, es_func, 1.0)
+    es_best, es_rate = participant(1, es_func_low, 1.0)
 
     q[1] = es_best
 
