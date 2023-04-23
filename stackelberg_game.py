@@ -40,7 +40,7 @@ def distance(list1, list2):
 lambda_of_task = 10
 
 # mec 速率 (任务数量/s)
-mec_rate = 7
+mec_rate = 20
 
 # 各 ES 节点的速率(任务数/s)
 u_rate = [3, 2, 4, 5]
@@ -53,13 +53,13 @@ freq = [mec_rate * lambda_of_task] + [i * lambda_of_task for i in u_rate]
 
 
 # 任务数量
-N = 10
+N = 15
 
 # pij 对应任务 j 在 节点 i 上的速率
 p = gen_p(freq, 10, N)
 
 
-r0_es_edge = [0.3, 0.2, 0.4, 0.5]
+r0_es_edge = [0.3, 0.2, 0.6, 0.5]
 EX_es_edge = [2, 2, 1, 3]
 EX2_es_edge = [1, 0.5, 0.9, 1.2]
 
@@ -101,7 +101,7 @@ print(q_target)
 # 策略 q'
 q_temp = q_target.copy()
 
-while True:
+for _ in range(10):
     # MEC 更新策略
     bp, _ = participant(edges[0], p, qarray, M, N, Q_MIN, Q_MAX, reach_rate)
     # 更新策略
@@ -113,8 +113,13 @@ while True:
         bp, rate = participant(edges[i], p, q_temp, M, N, Q_MIN, Q_MAX, reach_rate)
         q_temp[edges[i].pos] = bp
 
-    if distance(q_temp, q_target) < 2:
+    if distance(q_temp, q_target) < 8:
         break
     q_target = q_temp.copy()
     print(q_target)
+
 print(q_target)
+
+result = resolve(p, q_target, M, N, 13)
+result = [len(r) for r in result]
+print(result)
